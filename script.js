@@ -9,6 +9,8 @@
 
 // DIFFERENT DATA! Contains movement dates, currency and locale
 
+// js ,1111 | jd, 2222 are the username / password combinations available.
+
 const account1 = {
   owner: 'Jonas Schmedtmann',
   movements: [200, 455.23, -306.5, 25000, -642.21, -133.9, 79.97, 1300],
@@ -82,9 +84,8 @@ const inputClosePin = document.querySelector('.form__input--pin');
 // Functions
 
 const formatMovementDate = function (date, locale) {
-
   const calcDaysPassed = (date1, date2) =>
-    Math.abs(date2 - date1) / (1000 * 60 * 60 * 24); // we now get back the days.   
+    Math.abs(date2 - date1) / (1000 * 60 * 60 * 24); // we now get back the days.
 
   const daysPassed = calcDaysPassed(new Date(), date);
   if (daysPassed === 0) return 'Today';
@@ -107,15 +108,14 @@ const formatCur = function (value, locale, currency) {
     style: 'currency',
     currency: currency,
   }).format(value);
-}
+};
 
 const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
 
-  const combinedMovsDates = acc.movements.map((mov, i) =>
-  ({
+  const combinedMovsDates = acc.movements.map((mov, i) => ({
     movement: mov,
-    movementDate: acc.movementsDates.at(i)
+    movementDate: acc.movementsDates.at(i),
   }));
 
   if (sort) combinedMovsDates.sort((a, b) => a.movement - b.movement);
@@ -126,17 +126,18 @@ const displayMovements = function (acc, sort = false) {
     const { movement, movementDate } = obj;
     const type = movement > 0 ? 'deposit' : 'withdrawal';
 
-    // Date of Transactions 
+    // Date of Transactions
     const date = new Date(movementDate);
     const displayDate = formatMovementDate(date, acc.locale);
 
-    //internationalizing the currency 
+    //internationalizing the currency
     const formattedMov = formatCur(movement, acc.locale, acc.currency);
 
     const html = `
       <div class="movements__row">
-        <div class="movements__type movements__type--${type}">${i + 1
-      } ${type}</div>
+        <div class="movements__type movements__type--${type}">${
+          i + 1
+        } ${type}</div>
         <div class="movments__date">${displayDate}</div> 
         <div class="movements__value">${formattedMov}</div>
       </div>
@@ -162,7 +163,7 @@ const calcDisplaySummary = function (acc) {
   const out = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = formatCur(Math.abs(out), acc.locale, acc.currency);;
+  labelSumOut.textContent = formatCur(Math.abs(out), acc.locale, acc.currency);
 
   const interest = acc.movements
     .filter(mov => mov > 0)
@@ -172,7 +173,7 @@ const calcDisplaySummary = function (acc) {
       return int >= 1;
     })
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = formatCur(interest, acc.locale, acc.currency);;
+  labelSumInterest.textContent = formatCur(interest, acc.locale, acc.currency);
 };
 
 const createUsernames = function (accs) {
@@ -209,13 +210,13 @@ const startLogOutTimer = function () {
     // When 0 seconds, stop timer and log out user
     if (time === 0) {
       clearInterval(timer);
-      labelWelcome.textContent = 'Log in to get started'
+      labelWelcome.textContent = 'Log in to get started';
       containerApp.style.opacity = 0;
     }
 
     //Decrease 1s
-    time--; // comes after all the logic to prevent premature execution of logout 
-  }
+    time--; // comes after all the logic to prevent premature execution of logout
+  };
 
   // Set time to 5 minutes
   let time = 300; // 100 seconds
@@ -236,14 +237,15 @@ btnLogin.addEventListener('click', function (e) {
   e.preventDefault();
 
   currentAccount = accounts.find(
-    acc => acc.username === inputLoginUsername.value
+    acc => acc.username === inputLoginUsername.value,
   );
   console.log(currentAccount);
 
   if (currentAccount?.pin === +inputLoginPin.value) {
     // Display UI and message
-    labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]
-      }`;
+    labelWelcome.textContent = `Welcome back, ${
+      currentAccount.owner.split(' ')[0]
+    }`;
     containerApp.style.opacity = 100;
 
     //Create Current Date under Current balance
@@ -253,14 +255,15 @@ btnLogin.addEventListener('click', function (e) {
       hour: 'numeric',
       minute: 'numeric',
       day: 'numeric',
-      month: '2-digit',  // long, numeric
+      month: '2-digit', // long, numeric
       year: 'numeric',
-    }
+    };
     const locale = currentAccount.locale; // per  browser
     console.log(locale);
 
-    labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(now)
-
+    labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(
+      now,
+    );
 
     // Clear input fields
     inputLoginUsername.value = inputLoginPin.value = '';
@@ -272,8 +275,6 @@ btnLogin.addEventListener('click', function (e) {
 
     // Update UI
     updateUI(currentAccount);
-
-
   }
 });
 
@@ -282,7 +283,7 @@ btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
   const amount = +inputTransferAmount.value;
   const receiverAcc = accounts.find(
-    acc => acc.username === inputTransferTo.value
+    acc => acc.username === inputTransferTo.value,
   );
   inputTransferAmount.value = inputTransferTo.value = '';
 
@@ -325,7 +326,7 @@ btnLoan.addEventListener('click', function (e) {
       currentAccount.movementsDates.push(new Date().toISOString());
 
       // Update UI
-      updateUI(currentAccount)
+      updateUI(currentAccount);
 
       // Reset timer when user active
       clearInterval(timer);
@@ -333,8 +334,6 @@ btnLoan.addEventListener('click', function (e) {
     }, 3000);
   }
   inputLoanAmount.value = '';
-
-
 });
 
 // CLOSING / CLOSE ACCOUNT
@@ -343,10 +342,10 @@ btnClose.addEventListener('click', function (e) {
 
   if (
     inputCloseUsername.value === currentAccount.username &&
-    +(inputClosePin.value) === currentAccount.pin
+    +inputClosePin.value === currentAccount.pin
   ) {
     const index = accounts.findIndex(
-      acc => acc.username === currentAccount.username
+      acc => acc.username === currentAccount.username,
     );
     console.log(index);
     // .indexOf(23)
